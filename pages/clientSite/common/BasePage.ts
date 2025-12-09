@@ -40,4 +40,27 @@ export class BasePage {
       this.page.getByRole("link", { name: "Sign in" })
     ).toBeVisible();
   }
+  get newArticleButton(): Locator {
+    return this.page.getByRole("link", { name: "New Article" });
+  }
+  get articleTitle(): Locator {
+    return this.page.getByRole("textbox", { name: "Article Title" });
+  }
+  get aboutArticle(): Locator {
+    return this.page.getByRole("textbox", {
+      name: "What's this article about?",
+    });
+  }
+  get articleDescription(): Locator {
+    return this.page.getByRole("textbox", { name: "Write your article (in" });
+  }
+  get publishArticleButton(): Locator {
+    return this.page.getByRole("button", { name: "Publish Article" });
+  }
+  get deleteArticleButton(): Locator {
+    return this.page.getByRole("button", { name: "Delete Article" }).first();
+  }
+  get yourFeedPage(): Locator {
+    return this.page.getByText("Your Feed");
+  }
 }

@@ -3,24 +3,32 @@ import { RegistrationPage } from "../pages/clientSite/RegistrationPage";
 import { User } from "../utils/userUtils";
 import { LoginPage } from "../pages/clientSite/LoginPage";
 import { generateUserRegistrationData } from "../utils/userUtils";
+import { ArticlePage } from "../pages/clientSite/ArticlePage";
+import invalidCredentials from "../testData/invalidCredentials.json";
+import { BasePage } from "../pages/clientSite/common/BasePage";
+import { env } from "process";
 
 test.describe("Registration Tests", () => {
-  let reg: RegistrationPage;
+  let registrationPage: RegistrationPage;
 
   test.beforeEach(async ({ page }) => {
-    reg = new RegistrationPage(page);
+    registrationPage = new RegistrationPage(page);
     await page.goto("/register");
   });
 
   test("Sign Up button is disabled when fields are empty", async ({ page }) => {
-    await expect(reg.signUpButton).toBeDisabled();
+    await expect(registrationPage.signUpButton).toBeDisabled();
   });
   test("Register of new user", async ({ page }) => {
     let user: User;
 
     await test.step("Registration", async () => {
       const user = generateUserRegistrationData();
-      await reg.registerUser(user.username, user.email, user.password);
+      await registrationPage.registerUser(
+        user.username,
+        user.email,
+        user.password
+      );
 
       await test.step("Verify the user is logged successfully", async () => {
         await expect(
@@ -29,22 +37,58 @@ test.describe("Registration Tests", () => {
       });
     });
     await test.step("Log out", async () => {
-      await reg.logOut();
+      await registrationPage.logOut();
     });
   });
 
   test("Register of new user with invalid Email", async ({ page }) => {
-    await reg.registerWithInvalidEmails();
+    const possibleErrorMessages = [
+      "email is invalid",
+      "email can't be blank",
+      "password is too short (minimum is 8 characters)",
+      "username has already been taken",
+    ];
+    for (const email of invalidCredentials.invalidEmailsAsString) {
+      await registrationPage.registerUser("petko", email, "55889966");
+
+      const errorMessages = await page
+        .locator(".error-messages li")
+        .allTextContents();
+      for (const msg of errorMessages) {
+        expect(possibleErrorMessages).toContain(msg);
+      }
+    }
   });
+
   test("Register of new user with invalid Password", async ({ page }) => {
-    await reg.registerWithInvalidPassword();
+    //await reg.registerWithInvalidPassword();
+    registrationPage.registerWithInvalidPassword();
+    const possibleErrorMessages = [
+      "password is too short (minimum is 8 characters)",
+      "password can't be blank",
+    ];
+    for (const password of invalidCredentials.invalidPassword) {
+      await registrationPage.registerUser(
+        "petko",
+        "mynewemail@abv.bg",
+        password
+      );
+
+      const errorMessages = await page
+        .locator(".errpr-messages li")
+        .allTextContents();
+
+      for (const msg of errorMessages) {
+        expect(possibleErrorMessages).toContain(msg);
+      }
+    }
   });
 });
 test.describe("Login Tests", () => {
-  let log: LoginPage;
+  let loginPage: LoginPage;
 
   test.beforeEach(async ({ page }) => {
-    log = new LoginPage(page);
+    loginPage = new LoginPage(page);
     await page.goto("/login");
   });
   test("Login with correct data", { tag: "@smoke" }, async ({ page }) => {
@@ -53,12 +97,12 @@ test.describe("Login Tests", () => {
     const username = process.env.USER_NAME!;
 
     await test.step("Log in", async () => {
-      await log.login(email, password);
+      await loginPage.login(email, password);
       await expect(page.getByRole("link", { name: username })).toBeVisible();
     });
 
     await test.step("Log Out", async () => {
-      await log.logOut();
+      await loginPage.logOut();
     });
   });
   test(
@@ -69,7 +113,7 @@ test.describe("Login Tests", () => {
       const invalidPassword = process.env.INVALID_PASSWORD!;
 
       await test.step("Log in with invalid email and password", async () => {
-        await log.login(invalidEmail, invalidPassword);
+        await loginPage.login(invalidEmail, invalidPassword);
       });
       await test.step("Catch the error message", async () => {
         await expect(
@@ -82,6 +126,24 @@ test.describe("Login Tests", () => {
     const email = process.env.EMAIL!;
     const password = process.env.PASSWORD!;
 
-    await log.verifyThePassIsHidden(email, password);
+    await loginPage.verifyThePassIsHidden(email, password);
+  });
+});
+test.describe("Tests for Article Page", () => {
+  let articlePage: ArticlePage;
+  let loginPage: LoginPage;
+
+  test.beforeEach(async ({ page }) => {
+    articlePage = new ArticlePage(page);
+    loginPage = new LoginPage(page);
+
+    await page.goto("/login");
+
+    const email = process.env.EMAIL!;
+    const password = process.env.PASSWORD!;
+    await loginPage.login(email, password);
+  });
+  test("Create Article", async ({}) => {
+    await articlePage.createAndDeleteArticle();
   });
 });

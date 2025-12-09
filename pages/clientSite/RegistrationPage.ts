@@ -21,24 +21,6 @@ export class RegistrationPage extends BasePage {
     await this.signUpButton.click();
   }
 
-  async registerWithInvalidEmails() {
-    const possibleErrorMessages = [
-      "email is invalid",
-      "email can't be blank",
-      "password is too short (minimum is 8 characters)",
-      "username has already been taken",
-    ];
-    for (const email of invalidCredentials.invalidEmailsAsString) {
-      await this.registerUser("petko", email, "55889966");
-
-      const errorMessages = await this.page
-        .locator(".error-messages li")
-        .allTextContents();
-      for (const msg of errorMessages) {
-        expect(possibleErrorMessages).toContain(msg);
-      }
-    }
-  }
   async registerWithInvalidPassword() {
     const possibleErrorMessages = [
       "password is too short (minimum is 8 characters)",
