@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { RegistrationPage } from "../pages/clientSite/RegistrationPage";
 import { User } from "../utils/userUtils";
+import { LoginPage } from "../pages/clientSite/LoginPage";
 
 test.describe("Registration Tests", () => {
   let reg: RegistrationPage;
@@ -14,7 +15,6 @@ test.describe("Registration Tests", () => {
     await expect(reg.signUpButton).toBeDisabled();
   });
   test("Register of new user", async ({ page }) => {
-    const reg = new RegistrationPage(page);
     let user: User;
 
     await test.step("Registration", async () => {
@@ -25,6 +25,28 @@ test.describe("Registration Tests", () => {
     });
     await test.step("Log out", async () => {
       await reg.logOut();
+    });
+  });
+});
+test.describe("Login Tests", () => {
+  let log: LoginPage;
+
+  test.beforeEach(async ({ page }) => {
+    log = new LoginPage(page);
+    await page.goto("/login");
+  });
+  test("Login with correct data", { tag: "@smoke" }, async ({ page }) => {
+    const email = process.env.EMAIL!;
+    const password = process.env.PASSWORD!;
+    const username = process.env.USER_NAME!;
+
+    await test.step("Log in", async () => {
+      await log.login(email, password);
+      await expect(page.getByRole("link", { name: username })).toBeVisible();
+    });
+
+    await test.step("Log Out", async () => {
+      await log.logOut();
     });
   });
 });
