@@ -39,4 +39,21 @@ export class RegistrationPage extends BasePage {
       }
     }
   }
+  async registerWithInvalidPassword() {
+    const possibleErrorMessages = [
+      "password is too short (minimum is 8 characters)",
+      "password can't be blank",
+    ];
+    for (const password of invalidCredentials.invalidPassword) {
+      await this.registerUser("petko", "mynewemail@abv.bg", password);
+
+      const errorMessages = await this.page
+        .locator(".errpr-messages li")
+        .allTextContents();
+
+      for (const msg of errorMessages) {
+        expect(possibleErrorMessages).toContain(msg);
+      }
+    }
+  }
 }

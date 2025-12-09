@@ -36,6 +36,9 @@ test.describe("Registration Tests", () => {
   test("Register of new user with invalid Email", async ({ page }) => {
     await reg.registerWithInvalidEmails();
   });
+  test("Register of new user with invalid Password", async ({ page }) => {
+    await reg.registerWithInvalidPassword();
+  });
 });
 test.describe("Login Tests", () => {
   let log: LoginPage;
