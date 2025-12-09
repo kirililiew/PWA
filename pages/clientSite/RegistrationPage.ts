@@ -1,6 +1,7 @@
-import { Page, Locator, expect } from "@playwright/test";
-import { generateRandomUser, User } from "../../utils/userUtils";
+import { Page, expect } from "@playwright/test";
 import { BasePage } from "./common/BasePage";
+import invalidCredentials from "../../testData/invalidCredentials.json";
+
 /**
  * This is the page object for the Registration Page.
  * @export
@@ -13,23 +14,29 @@ export class RegistrationPage extends BasePage {
     super(page);
   }
 
-  async register(username: string, email: string, password: string) {
+  async registerUser(username: string, email: string, password: string) {
     await this.username.fill(username);
     await this.email.fill(email);
     await this.password.fill(password);
     await this.signUpButton.click();
   }
 
-  async isSigniUpButtonEnabled(): Promise<boolean> {
-    return await this.signUpButton.isEnabled();
-  }
+  async registerWithInvalidEmails() {
+    const possibleErrorMessages = [
+      "email is invalid",
+      "email can't be blank",
+      "password is too short (minimum is 8 characters)",
+      "username has already been taken",
+    ];
+    for (const email of invalidCredentials.invalidEmailsAsString) {
+      await this.registerUser("petko", email, "55889966");
 
-  async registerRandom(): Promise<User> {
-    const user = generateRandomUser();
-    await this.page.getByPlaceholder("Username").fill(user.username);
-    await this.page.getByPlaceholder("Email").fill(user.email);
-    await this.page.getByPlaceholder("Password").fill(user.password);
-    await this.page.getByRole("button", { name: "Sign up" }).click();
-    return user;
+      const errorMessages = await this.page
+        .locator(".error-messages li")
+        .allTextContents();
+      for (const msg of errorMessages) {
+        expect(possibleErrorMessages).toContain(msg);
+      }
+    }
   }
 }

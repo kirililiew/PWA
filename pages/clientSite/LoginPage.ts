@@ -1,4 +1,4 @@
-import { Page, Locator, expect } from "@playwright/test";
+import { Page } from "@playwright/test";
 import { BasePage } from "./common/BasePage";
 /**
  * This is the page object for the Page Page.

@@ -12,7 +12,7 @@ export type User = {
   password: string;
 };
 
-export function generateRandomUser(): User {
+export function generateUserRegistrationData(): User {
   const username = `user_${Math.random().toString(36).substring(2, 8)}`;
   const email = `user_${Math.random().toString(36).substring(2, 8)}@test.com`;
   const password = `Pass_${Math.random().toString(36).substring(2, 10)}`;

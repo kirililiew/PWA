@@ -2,6 +2,7 @@ import { test, expect } from "@playwright/test";
 import { RegistrationPage } from "../pages/clientSite/RegistrationPage";
 import { User } from "../utils/userUtils";
 import { LoginPage } from "../pages/clientSite/LoginPage";
+import { generateUserRegistrationData } from "../utils/userUtils";
 
 test.describe("Registration Tests", () => {
   let reg: RegistrationPage;
@@ -18,14 +19,22 @@ test.describe("Registration Tests", () => {
     let user: User;
 
     await test.step("Registration", async () => {
-      const user = await reg.registerRandom();
-      await expect(
-        page.getByRole("link", { name: user.username })
-      ).toBeVisible();
+      const user = generateUserRegistrationData();
+      await reg.registerUser(user.username, user.email, user.password);
+
+      await test.step("Verify the user is logged successfully", async () => {
+        await expect(
+          page.getByRole("link", { name: user.username })
+        ).toBeVisible();
+      });
     });
     await test.step("Log out", async () => {
       await reg.logOut();
     });
+  });
+
+  test("Register of new user with invalid Email", async ({ page }) => {
+    await reg.registerWithInvalidEmails();
   });
 });
 test.describe("Login Tests", () => {
@@ -49,4 +58,21 @@ test.describe("Login Tests", () => {
       await log.logOut();
     });
   });
+  test(
+    "Try to login with ivalid data",
+    { tag: "@sanity" },
+    async ({ page }) => {
+      const invalidEmail = process.env.INVALID_EMAIL!;
+      const invalidPassword = process.env.INVALID_PASSWORD!;
+
+      await test.step("Log in with invalid email and password", async () => {
+        await log.login(invalidEmail, invalidPassword);
+      });
+      await test.step("Catch the error message", async () => {
+        await expect(
+          page.getByText("email or password is invalid")
+        ).toBeVisible();
+      });
+    }
+  );
 });
