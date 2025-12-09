@@ -78,4 +78,10 @@ test.describe("Login Tests", () => {
       });
     }
   );
+  test("Verify the password is hidden with dots", async ({ page }) => {
+    const email = process.env.EMAIL!;
+    const password = process.env.PASSWORD!;
+
+    await log.verifyThePassIsHidden(email, password);
+  });
 });
