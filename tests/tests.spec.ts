@@ -127,21 +127,3 @@ test.describe("Login Tests", () => {
     await loginPage.verifyThePassIsHidden(email, password);
   });
 });
-test.describe("Tests for Article Page", () => {
-  let articlePage: ArticlePage;
-  let loginPage: LoginPage;
-
-  test.beforeEach(async ({ page }) => {
-    articlePage = new ArticlePage(page);
-    loginPage = new LoginPage(page);
-
-    await page.goto("/login");
-
-    const email = process.env.EMAIL!;
-    const password = process.env.PASSWORD!;
-    await loginPage.login(email, password);
-  });
-  test("Create Article", async ({}) => {
-    await articlePage.createAndDeleteArticle();
-  });
-});

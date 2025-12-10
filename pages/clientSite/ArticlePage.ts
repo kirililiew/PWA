@@ -1,5 +1,6 @@
 import { Page, Locator, expect } from "@playwright/test";
 import { BasePage } from "./common/BasePage";
+import { faker } from "@faker-js/faker";
 /**
  * This is the page object for the Article Page.
  * @export
