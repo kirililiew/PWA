@@ -53,10 +53,10 @@ export default defineConfig({
       name: "chromium",
       use: {
         ...devices["Desktop Chrome"],
-        storageState: ".auth/userSession.json",
+        // storageState: ".auth/userSession.json",
         viewport: { width: 1366, height: 768 },
       },
-      dependencies: ["setup"],
+      // dependencies: ["setup"],
     },
 
     {

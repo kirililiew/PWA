@@ -1,3 +1,4 @@
+// pom/page-object-fixtures.ts
 import { test as base } from "@playwright/test";
 import { LoginPage } from "../../pages/clientSite/LoginPage";
 import { RegistrationPage } from "../../pages/clientSite/RegistrationPage";
@@ -13,12 +14,12 @@ export const test = base.extend<FrameworkFixtures>({
   loginPage: async ({ page }, use) => {
     await use(new LoginPage(page));
   },
-
   registrationPage: async ({ page }, use) => {
     await use(new RegistrationPage(page));
   },
-
   articlePage: async ({ page }, use) => {
     await use(new ArticlePage(page));
   },
 });
+
+export const expect = test.expect;
