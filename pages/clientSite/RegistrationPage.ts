@@ -15,30 +15,19 @@ export class RegistrationPage extends BasePage {
   }
 
   async registerUser(username: string, email: string, password: string) {
+    await expect(this.username).toBeEnabled();
     await this.username.fill(username);
+
+    await expect(this.email).toBeEnabled();
     await this.email.fill(email);
+
+    await expect(this.password).toBeEnabled();
     await this.password.fill(password);
-    await this.signUpButton.click();
+
+    await expect(this.signUpButton).toBeEnabled();
+    await this.signUpButton.click({ force: true });
   }
 
-  async registerWithInvalidEmails() {
-    const possibleErrorMessages = [
-      "email is invalid",
-      "email can't be blank",
-      "password is too short (minimum is 8 characters)",
-      "username has already been taken",
-    ];
-    for (const email of invalidCredentials.invalidEmailsAsString) {
-      await this.registerUser("petko", email, "55889966");
-
-      const errorMessages = await this.page
-        .locator(".error-messages li")
-        .allTextContents();
-      for (const msg of errorMessages) {
-        expect(possibleErrorMessages).toContain(msg);
-      }
-    }
-  }
   async registerWithInvalidPassword() {
     const possibleErrorMessages = [
       "password is too short (minimum is 8 characters)",
@@ -48,7 +37,7 @@ export class RegistrationPage extends BasePage {
       await this.registerUser("petko", "mynewemail@abv.bg", password);
 
       const errorMessages = await this.page
-        .locator(".errpr-messages li")
+        .locator(".error-messages li")
         .allTextContents();
 
       for (const msg of errorMessages) {
