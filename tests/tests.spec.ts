@@ -5,8 +5,6 @@ import { LoginPage } from "../pages/clientSite/LoginPage";
 import { generateUserRegistrationData } from "../utils/userUtils";
 import { ArticlePage } from "../pages/clientSite/ArticlePage";
 import invalidCredentials from "../testData/invalidCredentials.json";
-import { BasePage } from "../pages/clientSite/common/BasePage";
-import { env } from "process";
 
 test.describe("Registration Tests", () => {
   let registrationPage: RegistrationPage;
@@ -62,7 +60,7 @@ test.describe("Registration Tests", () => {
 
   test("Register of new user with invalid Password", async ({ page }) => {
     //await reg.registerWithInvalidPassword();
-    registrationPage.registerWithInvalidPassword();
+    await registrationPage.registerWithInvalidPassword();
     const possibleErrorMessages = [
       "password is too short (minimum is 8 characters)",
       "password can't be blank",
@@ -75,7 +73,7 @@ test.describe("Registration Tests", () => {
       );
 
       const errorMessages = await page
-        .locator(".errpr-messages li")
+        .locator(".error-messages li")
         .allTextContents();
 
       for (const msg of errorMessages) {
